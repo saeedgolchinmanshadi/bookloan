@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_book_loan_delete', {'id': book_loan.id}) }}" onsubmit="return confirm('آیا از حذف این رکورد اطمینان دارید؟');" class="m-0">
+	<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ book_loan.id) }}">
+	<button type="submit" class="btn btn-action table-btn-light text-danger">حذف</button>
+</form>

@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/table.html.twig' as table %}
+
+{% block title %}مدیریت اعضا{% endblock %}
+
+{% block body %}
+	<div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3 mb-4">
+		<h1 class="h5 text-dark mb-0">لیست اعضا</h1>
+		<a href="{{ path('app_member_new') }}" class="btn btn-dark text-decoration-none">+ افزودن عضو جدید</a>
+	</div>
+
+	<div class="card app-card mb-4">
+		<div class="card-body py-3">
+			<form method="get" class="row g-3 align-items-end">
+				<div class="col-md-10">
+					<label class="form-label text-muted small mb-2">جستجو</label>
+					<input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="نام خانوادگی، کد ملی یا شماره تماس...">
+				</div>
+				<div class="col-md-2">
+					<button type="submit" class="btn btn-dark w-100">جستجو</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	{{ table.open() }}
+	<table class="table table-borderless align-middle mb-0 data-table">
+		<thead>
+			<tr>
+				<th>شناسه</th>
+				<th>نام و نام خانوادگی</th>
+				<th>کد ملی</th>
+				<th>شماره تماس</th>
+				<th>وضعیت</th>
+				<th class="text-end">عملیات</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for member in pagination %}
+				<tr>
+					<td class="text-muted">{{ member.id }}</td>
+					<td>{{ member.firstName }} {{ member.lastName }}</td>
+					<td>{{ member.nationalCode }}</td>
+					<td dir="ltr" class="text-end">{{ member.mobile }}</td>
+					<td>
+						{% if member.isActive %}
+							<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-3">فعال</span>
+						{% else %}
+							<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill px-3">غیرفعال</span>
+						{% endif %}
+					</td>
+					<td class="text-end">
+						<a href="{{ path('app_member_show', {'id': member.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">پرونده</a>
+						<a href="{{ path('app_member_edit', {'id': member.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">ویرایش</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="6" class="text-center py-5 text-muted">
+						{% if search_query %}
+							نتیجه‌ای برای «{{ search_query }}» یافت نشد.
+						{% else %}
+							هیچ عضوی یافت نشد.
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{{ table.close(pagination) }}
+{% endblock %}

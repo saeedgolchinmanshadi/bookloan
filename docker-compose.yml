@@ -1,0 +1,69 @@
+services:
+    database:
+        image: mariadb:11.4
+        container_name: symfony_db
+        environment:
+            MYSQL_ROOT_PASSWORD: root_password
+            MYSQL_DATABASE: library_db
+            MYSQL_USER: symfony_user
+            MYSQL_PASSWORD: symfony_password
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - symfony_network
+
+    php:
+        build:
+            context: .
+            dockerfile: ./docker/php/Dockerfile
+        container_name: symfony_php
+        volumes:
+            - .:/var/www/html:cached
+            - vendor_data:/var/www/html/vendor
+            - var_cache:/var/www/html/var/cache
+            - var_log:/var/www/html/var/log
+        networks:
+            - symfony_network
+        depends_on:
+            - database
+        environment:
+            - TZ=Asia/Tehran
+
+    nginx:
+        image: nginx:alpine
+        container_name: symfony_nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/var/www/html:cached
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - symfony_network
+        depends_on:
+            - php
+
+    phpmyadmin:
+        image: phpmyadmin:5.2
+        container_name: symfony_phpmyadmin
+        environment:
+            PMA_HOST: database
+            PMA_USER: root
+            PMA_PASSWORD: root_password
+        ports:
+            - "8081:80"
+        networks:
+            - symfony_network
+        depends_on:
+            - database
+
+volumes:
+    db_data:
+    vendor_data:
+    var_cache:
+    var_log:
+
+networks:
+    symfony_network:
+        driver: bridge

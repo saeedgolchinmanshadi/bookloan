@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}شناسنامه کتاب{% endblock %}
+
+{% block body %}
+	<div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3 mb-4">
+		<h1 class="h5 text-dark mb-0">شناسنامه کتاب</h1>
+		<a href="{{ path('app_book_index') }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">بازگشت به لیست</a>
+	</div>
+
+	<div class="card table-card">
+		<div class="table-responsive table-card-body">
+			<table class="table table-borderless align-middle mb-0 data-table">
+				<tbody>
+					<tr>
+						<th class="text-muted fw-normal" style="width: 22%;">شناسه</th>
+						<td class="text-muted">{{ book.id }}</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">عنوان کتاب</th>
+						<td>{{ book.title }}</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">نویسنده</th>
+						<td>{{ book.author }}</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">ناشر</th>
+						<td>{{ book.publisher ? book.publisher.name : '—' }}</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">موضوعات</th>
+						<td>
+							{% if book.subjects is not empty %}
+								{% for subject in book.subjects %}
+									<span class="badge bg-light text-dark border fw-normal me-1">{{ subject.title }}</span>
+								{% endfor %}
+							{% else %}
+								<span class="text-muted">بدون موضوع</span>
+							{% endif %}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="table-card-footer d-flex flex-wrap justify-content-end align-items-center gap-2">
+			<a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">ویرایش</a>
+			<form method="post" action="{{ path('app_book_delete', {'id': book.id}) }}" onsubmit="return confirm('آیا از حذف این کتاب اطمینان دارید؟');" class="m-0">
+				<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ book.id) }}">
+				<button class="btn btn-sm table-btn-light py-1 text-danger">حذف</button>
+			</form>
+		</div>
+	</div>
+{% endblock %}

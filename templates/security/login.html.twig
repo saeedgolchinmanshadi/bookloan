@@ -1,0 +1,41 @@
+﻿{% extends 'security/login_base.html.twig' %}
+
+{% block title %}ورود به سیستم{% endblock %}
+
+{% block body %}
+	<main class="form-signin w-100 m-auto">
+		<form method="post" action="{{ path('app_login') }}">
+			<img class="mb-4 d-block mx-auto rounded" src="{{ asset('images/book-logo.png') }}" alt="Bookloan" width="72" height="72">
+
+			<h1 class="h3 mb-3 fw-normal text-center">ورود به پنل مدیریت</h1>
+
+			{% if error %}
+				<div class="alert alert-danger text-center py-2 small mb-3">
+					نام کاربری یا رمز عبور شما اشتباه است.
+				</div>
+			{% endif %}
+
+			{% if app.user %}
+				<div class="alert alert-info text-center small mb-3">
+					شما با نام کاربری {{ app.user.userIdentifier }} وارد شده‌اید.
+				</div>
+			{% endif %}
+
+			<div class="form-floating">
+				<input type="text" value="{{ last_username }}" name="_username" id="floatingInput" class="form-control" placeholder="admin" autocomplete="username" required autofocus>
+				<label for="floatingInput">نام کاربری</label>
+			</div>
+
+			<div class="form-floating">
+				<input type="password" name="_password" id="floatingPassword" class="form-control" placeholder="Password" autocomplete="current-password" required>
+				<label for="floatingPassword">رمز عبور</label>
+			</div>
+
+			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" data-controller="csrf-protection">
+
+			<button class="btn btn-dark w-100 py-1" type="submit">ورود به سیستم</button>
+
+			<p class="mt-5 mb-3 text-body-secondary text-center">سیستم مدیریت کتابخانه</p>
+		</form>
+	</main>
+{% endblock %}

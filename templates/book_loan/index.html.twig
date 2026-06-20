@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/table.html.twig' as table %}
+
+{% block title %}مدیریت امانات و رزروها{% endblock %}
+
+{% block body %}
+	<div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3 mb-4">
+		<h1 class="h5 text-dark mb-0">داشبورد امانات و رزروها</h1>
+		<a href="{{ path('app_book_loan_new') }}" class="btn btn-dark text-decoration-none">+ ثبت امانت جدید</a>
+	</div>
+
+	<div class="card rounded-3 app-card mb-4">
+		<div class="card-body">
+			<form method="get" action="{{ path('app_book_loan_index') }}" class="row g-3 align-items-end">
+				<div class="col-md-4">
+					<label class="form-label text-muted small mb-2">جستجوی هوشمند</label>
+					<input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="نام کتاب، فامیل یا کد ملی...">
+				</div>
+				<div class="col-md-3">
+					<label class="form-label text-muted small mb-2">دسته‌بندی موضوعی</label>
+					<select name="subject" class="form-select">
+						<option value="">همه موضوعات</option>
+						{% for subject in subjects %}
+							<option value="{{ subject.id }}" {% if current_subject == subject.id %} selected {% endif %}>{{ subject.title }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label class="form-label text-muted small mb-2">وضعیت بازگشت</label>
+					<select name="status" class="form-select">
+						<option value="">همه وضعیت‌ها</option>
+						<option value="active" {% if current_status == 'active' %} selected {% endif %}>فعال (بازنگشته)</option>
+						<option value="returned" {% if current_status == 'returned' %} selected {% endif %}>بازگردانده شده</option>
+					</select>
+				</div>
+				<div class="col-md-2">
+					<button type="submit" class="btn btn-dark w-100">اعمال فیلتر</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	{{ table.open() }}
+	<table class="table table-borderless align-middle mb-0 data-table">
+		<thead>
+			<tr>
+				<th>کتاب</th>
+				<th>عضو گیرنده</th>
+				<th>نوع</th>
+				<th>تاریخ ثبت</th>
+				<th>وضعیت بازگشت</th>
+				<th class="text-end">عملیات</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for loan in pagination %}
+				<tr>
+					<td>{{ loan.book.title }}</td>
+					<td>
+						<div>{{ loan.member.firstName }} {{ loan.member.lastName }}</div>
+						<div class="small text-muted">{{ loan.member.nationalCode }}</div>
+					</td>
+					<td>
+						<span class="badge bg-light text-dark border">{{ loan.type == 'loan' ? 'امانت' : 'رزرو' }}</span>
+					</td>
+					<td class="text-muted">{{ loan.borrowDate ? loan.borrowDate|jalali('Y/m/d') : '' }}</td>
+					<td>
+						{% if loan.returnedAt %}
+							<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill">
+								{{ loan.type == 'loan' ? 'بازگردانده شده' : 'رزرو بسته شده' }}
+							</span>
+						{% else %}
+							<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill">
+								{{ loan.type == 'loan' ? 'در دست عضو' : 'رزرو فعال' }}
+							</span>
+						{% endif %}
+					</td>
+					<td class="text-end">
+						<div class="d-flex flex-wrap align-items-center justify-content-end gap-2">
+							<a href="{{ path('app_book_loan_show', {'id': loan.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">مدیریت</a>
+							{% if not loan.returnedAt %}
+								<form method="post" action="{{ path('app_book_loan_return', {'id': loan.id}) }}" onsubmit="return confirm('{{ loan.type == 'loan' ? 'آیا از ثبت بازگشت این کتاب اطمینان دارید؟' : 'آیا از لغو این رزرو اطمینان دارید؟' }}');" class="m-0">
+									<input type="hidden" name="_token" value="{{ csrf_token('return' ~ loan.id) }}">
+									<button class="btn btn-sm table-btn-light py-1">{{ loan.type == 'loan' ? 'اعلام بازگشت' : 'لغو رزرو' }}</button>
+								</form>
+							{% endif %}
+						</div>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="6" class="text-center py-5 text-muted">هیچ رکوردی با این مشخصات یافت نشد.</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{{ table.close(pagination) }}
+{% endblock %}

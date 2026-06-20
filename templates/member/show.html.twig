@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}پروفایل عضو -
+	{{ member.firstName }}
+	{{ member.lastName }}
+{% endblock %}
+
+{% block body %}
+	<div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3 mb-4">
+		<h1 class="h5 text-dark mb-0">پرونده عضو:
+			{{ member.firstName }}
+			{{ member.lastName }}</h1>
+		<a href="{{ path('app_member_index') }}" class="btn btn-outline-secondary text-decoration-none">بازگشت به لیست</a>
+	</div>
+
+	<div class="card p-3 p-lg-4 mb-4">
+		<h5 class="mb-4 border-bottom pb-2">اطلاعات هویتی</h5>
+		<div class="row g-4">
+			<div class="col-md-3">
+				<div class="text-muted small mb-1">کد ملی</div>
+				<div class="fw-bold">{{ member.nationalCode }}</div>
+			</div>
+			<div class="col-md-3">
+				<div class="text-muted small mb-1">تلفن همراه</div>
+				<div class="fw-bold">{{ member.mobile }}</div>
+			</div>
+			<div class="col-md-3">
+				<div class="text-muted small mb-1">وضعیت حساب</div>
+				<div>
+					{% if member.isActive %}
+						<span class="badge bg-success rounded-pill px-3">فعال</span>
+					{% else %}
+						<span class="badge bg-danger rounded-pill px-3">غیرفعال</span>
+					{% endif %}
+				</div>
+			</div>
+			<div class="col-12 col-md-3 text-md-end align-self-md-center">
+				<a href="{{ path('app_member_edit', {'id': member.id}) }}" class="btn btn-outline-secondary btn-sm text-decoration-none ">ویرایش اطلاعات</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="card table-card">
+		<div class="px-4 pt-4 pb-2">
+			<h5 class="mb-0 fw-semibold">تاریخچه امانات و رزروها</h5>
+		</div>
+
+		{% if loan_history is empty %}
+			<div class="text-center py-5 text-muted">
+				<p class="mb-0">هیچ سابقه امانت یا رزروی برای این عضو ثبت نشده است.</p>
+			</div>
+		{% else %}
+			<div class="table-responsive table-card-body">
+			<table class="table table-borderless align-middle mb-0 data-table">
+				<thead>
+					<tr>
+						<th>کتاب</th>
+						<th>نوع درخواست</th>
+						<th>تاریخ ثبت / تحویل</th>
+						<th>مهلت بازگشت</th>
+						<th>وضعیت</th>
+						<th class="text-end">عملیات</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for loan in loan_history %}
+						<tr>
+							<td>
+								<div>{{ loan.book.title }}</div>
+								<div class="small text-muted">{{ loan.book.author }}</div>
+							</td>
+							<td>
+								<span class="badge bg-light text-dark border">{{ loan.type == 'loan' ? 'امانت' : 'رزرو' }}</span>
+							</td>
+							<td class="text-muted">{{ loan.borrowDate ? loan.borrowDate|jalali('Y/m/d') : '—' }}</td>
+							<td class="text-muted">{{ loan.dueDate ? loan.dueDate|jalali('Y/m/d') : '—' }}</td>
+							<td>
+								{% if loan.returnedAt %}
+									<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill">
+										{{ loan.type == 'loan' ? 'بازگردانده شده' : 'رزرو بسته شده' }}
+									</span>
+									<div class="small text-muted mt-1">در: {{ loan.returnedAt|jalali('Y/m/d') }}</div>
+								{% elseif loan.dueDate and loan.dueDate < date() %}
+									<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill">تأخیر در بازگشت</span>
+								{% else %}
+									<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill">{{ loan.type == 'loan' ? 'در دست عضو' : 'رزرو فعال' }}</span>
+								{% endif %}
+							</td>
+							<td class="text-end">
+								<a href="{{ path('app_book_loan_show', {id: loan.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">جزئیات</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

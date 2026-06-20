@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% import '_macros/table.html.twig' as table %}
+
+{% block title %}مدیریت کتاب‌ها{% endblock %}
+
+{% block body %}
+	<div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3 mb-4">
+		<h1 class="h5 text-dark mb-0">لیست کتاب‌ها</h1>
+		<a href="{{ path('app_book_new') }}" class="btn btn-dark text-decoration-none">+ افزودن کتاب جدید</a>
+	</div>
+
+	<div class="card app-card mb-4">
+		<div class="card-body py-3">
+			<form method="get" class="row g-3 align-items-end">
+				<div class="col-md-10">
+					<label class="form-label text-muted small mb-2">جستجو</label>
+					<input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="عنوان یا نویسنده کتاب...">
+				</div>
+				<div class="col-md-2">
+					<button type="submit" class="btn btn-dark w-100">جستجو</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	{{ table.open() }}
+	<table class="table table-borderless align-middle mb-0 data-table">
+		<thead>
+			<tr>
+				<th>شناسه</th>
+				<th>عنوان کتاب</th>
+				<th>نویسنده</th>
+				<th>موضوع / ناشر</th>
+				<th class="text-end">عملیات</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for book in pagination %}
+				<tr>
+					<td class="text-muted">{{ book.id }}</td>
+					<td>{{ book.title }}</td>
+					<td>{{ book.author }}</td>
+					<td>
+						<div class="small text-muted">
+							{{ book.subjects is not empty ? book.subjects|map(s => s.title)|join('، ') : '-' }}
+						</div>
+						<div class="small text-muted">{{ book.publisher ? book.publisher.name : '-' }}</div>
+					</td>
+					<td class="text-end">
+						<a href="{{ path('app_book_show', {'id': book.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">مشاهده</a>
+						<a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">ویرایش</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="5" class="text-center py-5 text-muted">
+						{% if search_query %}
+							نتیجه‌ای برای «{{ search_query }}» یافت نشد.
+						{% else %}
+							هیچ کتابی یافت نشد.
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{{ table.close(pagination) }}
+{% endblock %}

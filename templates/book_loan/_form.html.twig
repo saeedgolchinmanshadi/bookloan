@@ -1,0 +1,62 @@
+﻿{% form_theme form 'form/book_loan_layout.html.twig' '@Autocomplete/autocomplete_form_theme.html.twig' %}
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+{% import '_macros/form_actions.html.twig' as form_actions %}
+{% if form.vars.errors|length > 0 %}
+	<div class="alert alert-danger">{{ form_errors(form) }}</div>
+{% endif %}
+<div class="row g-4 mb-2">
+	<div class="col-md-6">
+		{{ form_label(form.book) }}
+		{{ form_widget(form.book) }}
+		<div class="text-danger small">{{ form_errors(form.book) }}</div>
+	</div>
+	<div class="col-md-6">
+		{{ form_label(form.member) }}
+		{{ form_widget(form.member) }}
+		<div class="text-danger small">{{ form_errors(form.member) }}</div>
+	</div>
+
+	<div class="col-12">
+		{{ form_label(form.type) }}
+		{{ form_widget(form.type) }}
+		<div class="text-danger small mt-1">{{ form_errors(form.type) }}</div>
+	</div>
+</div>
+
+<div class="row g-4 pt-2">
+		<div class="col-md-6 mb-4">
+			{{ form_label(form.borrowDate) }}
+			{{ form_widget(form.borrowDate) }}
+
+			<div class="mt-2 d-flex flex-wrap gap-2">
+				<button type="button" class="btn btn-sm btn-light border text-muted" onclick="fillDate('book_loan_borrowDate', '{{ date('now')|jalali }}')">
+					امروز
+				</button>
+			</div>
+			<div class="small text-danger mt-1">{{ form_errors(form.borrowDate) }}</div>
+		</div>
+
+		<div class="col-md-6 mb-4">
+			{{ form_label(form.dueDate) }}
+			{{ form_widget(form.dueDate) }}
+
+			<div class="mt-2 d-flex flex-wrap gap-2">
+				<button type="button" class="btn btn-sm btn-light border text-success" onclick="fillDate('book_loan_dueDate', '{{ date('+7 days')|jalali }}')">+۷ روز</button>
+				<button type="button" class="btn btn-sm btn-light border text-primary" onclick="fillDate('book_loan_dueDate', '{{ date('+14 days')|jalali }}')">+۱۴ روز</button>
+				<button type="button" class="btn btn-sm btn-light border text-danger" onclick="fillDate('book_loan_dueDate', '{{ date('+30 days')|jalali }}')">+۱ ماه</button>
+			</div>
+			<div class="small text-danger mt-1">{{ form_errors(form.dueDate) }}</div>
+		</div>
+	</div>
+
+	{{ form_actions.footer(
+		cancel_url|default(path('app_book_loan_index')),
+		button_label|default('ثبت اطلاعات'),
+		show_delete|default(false) ? {
+			url: path('app_book_loan_delete', {id: book_loan.id}),
+			token_id: 'delete' ~ book_loan.id,
+			confirm: 'آیا از حذف این رکورد اطمینان دارید؟',
+		} : null
+	) }}
+
+	{{ form_end(form) }}

@@ -1,0 +1,12 @@
+{% macro open() %}
+	<div class="card table-card">
+		<div class="table-responsive table-card-body">
+{% endmacro %}
+
+{% macro close(pagination = null) %}
+		</div>
+		{% if pagination is not null %}
+			{{ knp_pagination_render(pagination) }}
+		{% endif %}
+	</div>
+{% endmacro %}

@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_publisher_delete', {'id': publisher.id}) }}" onsubmit="return confirm('آیا از حذف این ناشر اطمینان دارید؟');" class="m-0">
+	<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ publisher.id) }}">
+	<button type="submit" class="btn btn-action table-btn-light text-danger">حذف</button>
+</form>

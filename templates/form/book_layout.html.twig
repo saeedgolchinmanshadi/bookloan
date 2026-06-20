@@ -1,0 +1,24 @@
+{% use 'bootstrap_5_layout.html.twig' %}
+
+{% block checkbox_widget %}
+	{% if 'subject-chip-input' in attr.class|default('') %}
+		<input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %}>
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}
+
+{% block choice_widget_expanded %}
+	{% if 'subject-chips' in attr.class|default('') %}
+		<div {{ block('widget_container_attributes') }}>
+			{%- for child in form %}
+				<label class="subject-chip" for="{{ child.vars.id }}">
+					{{ form_widget(child, {label: false, attr: {class: 'subject-chip-input'}}) }}
+					<span class="subject-chip-label">{{ child.vars.label }}</span>
+				</label>
+			{% endfor -%}
+		</div>
+	{% else %}
+		{{ parent() }}
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% if pageCount is defined and totalCount is defined %}
+	<div class="table-card-footer d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3">
+		<span class="text-muted small text-center text-lg-start">
+			{% if totalCount > 0 %}
+				نمایش {{ firstItemNumber }} تا {{ lastItemNumber }} از {{ totalCount }}
+			{% else %}
+				موردی یافت نشد
+			{% endif %}
+		</span>
+
+		<div class="d-flex align-items-center justify-content-center justify-content-lg-end gap-2">
+			{% if previous is defined and previous %}
+				<a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="btn btn-sm table-btn-light py-1">قبلی</a>
+			{% else %}
+				<span class="btn btn-sm table-btn-light py-1 disabled">قبلی</span>
+			{% endif %}
+
+			<span class="text-muted small">{{ current }} / {{ pageCount }}</span>
+
+			{% if next is defined and next %}
+				<a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="btn btn-sm table-btn-light py-1">بعدی</a>
+			{% else %}
+				<span class="btn btn-sm table-btn-light py-1 disabled">بعدی</span>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}

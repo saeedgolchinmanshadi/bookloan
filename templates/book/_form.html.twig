@@ -1,0 +1,39 @@
+{% form_theme form 'form/book_layout.html.twig' %}
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+{% import '_macros/form_actions.html.twig' as form_actions %}
+<div class="row g-4 mb-2">
+	<div class="col-md-6">
+		{{ form_label(form.title) }}
+		{{ form_widget(form.title) }}
+		<div class="text-danger mt-1 small">{{ form_errors(form.title) }}</div>
+	</div>
+	<div class="col-md-6">
+		{{ form_label(form.author) }}
+		{{ form_widget(form.author) }}
+		<div class="text-danger mt-1 small">{{ form_errors(form.author) }}</div>
+	</div>
+
+	<div class="col-md-6">
+		{{ form_label(form.publisher) }}
+		{{ form_widget(form.publisher) }}
+		<div class="text-danger mt-1 small">{{ form_errors(form.publisher) }}</div>
+	</div>
+</div>
+
+<div class="mb-4">
+	{{ form_label(form.subjects) }}
+	{{ form_widget(form.subjects) }}
+	<div class="text-danger mt-1 small">{{ form_errors(form.subjects) }}</div>
+</div>
+
+{{ form_actions.footer(
+	cancel_url|default(path('app_book_index')),
+	button_label|default('ثبت کتاب'),
+	show_delete|default(false) ? {
+		url: path('app_book_delete', {id: book.id}),
+		token_id: 'delete' ~ book.id,
+		confirm: 'آیا از حذف این کتاب اطمینان دارید؟',
+	} : null
+) }}
+
+{{ form_end(form) }}

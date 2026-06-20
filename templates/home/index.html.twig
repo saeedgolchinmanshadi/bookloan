@@ -1,0 +1,68 @@
+﻿{% extends 'base.html.twig' %}
+{% import '_macros/dashboard.html.twig' as dashboard %}
+{% import '_macros/table.html.twig' as table %}
+
+{% block title %}داشبورد{% endblock %}
+
+{% block container_style %}max-width: 1000px{% endblock %}
+
+{% block body %}
+	<header class="dashboard-header mb-4">
+		<h1 class="h5 mb-1">داشبورد</h1>
+		<p class="text-muted small mb-0">خلاصه وضعیت کتابخانه</p>
+	</header>
+
+	<div class="row g-3 mb-4">
+		{{ dashboard.stat('کتاب‌ها', total_books, 'book') }}
+		{{ dashboard.stat('اعضا', total_members, 'people') }}
+		{{ dashboard.stat('امانات فعال', active_loans, 'journal-arrow-up', 'warning') }}
+		{{ dashboard.stat('تأخیر بازگشت', overdue_loans, 'exclamation-circle', 'danger') }}
+	</div>
+
+	<div class="dashboard-actions d-flex flex-wrap gap-2 mb-4">
+		{{ dashboard.action(path('app_book_loan_new'), '+ ثبت امانت', true) }}
+		{{ dashboard.action(path('app_member_new'), 'عضو جدید') }}
+		{{ dashboard.action(path('app_book_new'), 'کتاب جدید') }}
+		{{ dashboard.action(path('app_book_loan_index'), 'لیست امانات') }}
+	</div>
+
+	<section>
+		<div class="dashboard-section-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+			<h2 class="dashboard-section-title mb-0">مهلت بازگشت در ۷ روز آینده</h2>
+			{% if due_soon_loans is not empty %}
+				<span class="dashboard-section-count">{{ due_soon_loans|length }}</span>
+			{% endif %}
+		</div>
+
+		{{ table.open() }}
+		<table class="table table-borderless align-middle mb-0 data-table">
+			<thead>
+				<tr>
+					<th>کتاب</th>
+					<th>گیرنده</th>
+					<th>تماس</th>
+					<th>مهلت</th>
+					<th class="text-end">عملیات</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for loan in due_soon_loans %}
+					<tr>
+						<td>{{ loan.book.title }}</td>
+						<td>{{ loan.member.firstName }} {{ loan.member.lastName }}</td>
+						<td dir="ltr" class="text-muted">{{ loan.member.mobile }}</td>
+						<td class="dashboard-due-date">{{ loan.dueDate ? loan.dueDate|jalali('Y/m/d') : '—' }}</td>
+						<td class="text-end">
+							<a href="{{ path('app_book_loan_show', {id: loan.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">مدیریت</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="5" class="text-center py-4 text-muted">مهلتی در ۷ روز آینده ثبت نشده است.</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{{ table.close() }}
+	</section>
+{% endblock %}

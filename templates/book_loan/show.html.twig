@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}جزئیات امانت / رزرو{% endblock %}
+
+{% block body %}
+	<div class="d-flex flex-column flex-lg-row justify-content-between align-items-stretch align-items-lg-center gap-3 mb-4">
+		<h1 class="h5 text-dark mb-0">جزئیات درخواست</h1>
+		<a href="{{ path('app_book_loan_index') }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">بازگشت به لیست</a>
+	</div>
+
+	<div class="card table-card">
+		<div class="table-responsive table-card-body">
+			<table class="table table-borderless align-middle mb-0 data-table">
+				<tbody>
+					<tr>
+						<th class="text-muted fw-normal" style="width: 22%;">کتاب</th>
+						<td>
+							<div>{{ book_loan.book.title }}</div>
+							<div class="small text-muted">{{ book_loan.book.author }}</div>
+						</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">عضو گیرنده</th>
+						<td>
+							<div>{{ book_loan.member.firstName }} {{ book_loan.member.lastName }}</div>
+							<div class="small text-muted">{{ book_loan.member.nationalCode }}</div>
+						</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">نوع درخواست</th>
+						<td>
+							<span class="badge bg-light text-dark border">{{ book_loan.type == 'loan' ? 'امانت' : 'رزرو' }}</span>
+						</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">تاریخ ثبت / تحویل</th>
+						<td class="text-muted">{{ book_loan.borrowDate ? book_loan.borrowDate|jalali('Y/m/d') : '—' }}</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">مهلت بازگشت</th>
+						<td class="text-muted">{{ book_loan.dueDate ? book_loan.dueDate|jalali('Y/m/d') : '—' }}</td>
+					</tr>
+					<tr>
+						<th class="text-muted fw-normal">وضعیت بازگشت</th>
+						<td>
+							{% if book_loan.returnedAt %}
+								<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill">
+									{{ book_loan.type == 'loan' ? 'بازگردانده شده' : 'رزرو بسته شده' }}
+								</span>
+								<div class="small text-muted mt-1">در: {{ book_loan.returnedAt|jalali('Y/m/d') }}</div>
+							{% elseif book_loan.dueDate and book_loan.dueDate < date() and book_loan.type == 'loan' %}
+								<span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill">تأخیر در بازگشت</span>
+							{% else %}
+								<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill">
+									{{ book_loan.type == 'loan' ? 'در دست عضو' : 'رزرو فعال' }}
+								</span>
+							{% endif %}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="table-card-footer d-flex flex-wrap justify-content-end align-items-center gap-2">
+			{% if not book_loan.returnedAt %}
+				<form method="post" action="{{ path('app_book_loan_return', {'id': book_loan.id}) }}" onsubmit="return confirm('{{ book_loan.type == 'loan' ? 'آیا از ثبت بازگشت این کتاب اطمینان دارید؟' : 'آیا از لغو این رزرو اطمینان دارید؟' }}');" class="m-0">
+					<input type="hidden" name="_token" value="{{ csrf_token('return' ~ book_loan.id) }}">
+					<button class="btn btn-sm table-btn-light py-1">{{ book_loan.type == 'loan' ? 'اعلام بازگشت' : 'لغو رزرو' }}</button>
+				</form>
+			{% endif %}
+			<a href="{{ path('app_book_loan_edit', {'id': book_loan.id}) }}" class="btn btn-sm table-btn-light py-1 text-decoration-none">ویرایش</a>
+			<form method="post" action="{{ path('app_book_loan_delete', {'id': book_loan.id}) }}" onsubmit="return confirm('آیا از حذف این رکورد اطمینان دارید؟');" class="m-0">
+				<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ book_loan.id) }}">
+				<button class="btn btn-sm table-btn-light py-1 text-danger">حذف</button>
+			</form>
+		</div>
+	</div>
+{% endblock %}

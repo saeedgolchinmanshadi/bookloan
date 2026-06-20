@@ -1,0 +1,19 @@
+﻿{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+{% import '_macros/form_actions.html.twig' as form_actions %}
+<div class="mb-4">
+	{{ form_label(form.title) }}
+	{{ form_widget(form.title) }}
+	<div class="text-danger small">{{ form_errors(form.title) }}</div>
+</div>
+
+{{ form_actions.footer(
+	cancel_url|default(path('app_subject_index')),
+	button_label|default('ثبت اطلاعات'),
+	show_delete|default(false) ? {
+		url: path('app_subject_delete', {id: subject.id}),
+		token_id: 'delete' ~ subject.id,
+		confirm: 'آیا از حذف این موضوع اطمینان دارید؟',
+	} : null
+) }}
+
+{{ form_end(form) }}

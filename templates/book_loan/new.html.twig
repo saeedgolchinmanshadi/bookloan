@@ -1,0 +1,15 @@
+﻿{% extends 'base.html.twig' %}
+
+{% block title %}ثبت امانت / رزرو جدید
+{% endblock %}
+
+{% block body %}
+	<div class="mb-4">
+		<h4 class="mb-1 fw-bold">ثبت امانت یا رزرو</h4>
+		<p class="text-muted m-0">کتاب مورد نظر را به همراه تاریخ تحویل و مهلت بازگشت مشخص کنید.</p>
+	</div>
+
+	<div class="card p-3 p-lg-4">
+		{{ include('book_loan/_form.html.twig') }}
+	</div>
+{% endblock %}

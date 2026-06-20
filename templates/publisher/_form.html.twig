@@ -1,0 +1,19 @@
+﻿{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+{% import '_macros/form_actions.html.twig' as form_actions %}
+<div class="mb-4">
+	{{ form_label(form.name) }}
+	{{ form_widget(form.name) }}
+	<div class="text-danger small">{{ form_errors(form.name) }}</div>
+</div>
+
+{{ form_actions.footer(
+	cancel_url|default(path('app_publisher_index')),
+	button_label|default('ثبت اطلاعات'),
+	show_delete|default(false) ? {
+		url: path('app_publisher_delete', {id: publisher.id}),
+		token_id: 'delete' ~ publisher.id,
+		confirm: 'آیا از حذف این ناشر اطمینان دارید؟',
+	} : null
+) }}
+
+{{ form_end(form) }}
